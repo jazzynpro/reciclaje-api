@@ -1,122 +1,106 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+
+import PuntoForm from "./components/PuntoForm";
+
+import PuntoCard from "./components/PuntoCard";
+
+import {
+  listarPuntos,
+  guardarPunto
+} from "./services/puntoService";
+
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [puntos, setPuntos] = useState([]);
+
+  const [mensaje, setMensaje] = useState("");
+
+  // Consultar los puntos de reciclaje al iniciar
+  useEffect(() => {
+    cargarPuntos();
+  }, []);
+
+  // Método para consultar
+  const cargarPuntos = async () => {
+    try {
+      const datos = await listarPuntos();
+      setPuntos(datos);
+    } catch (error) {
+      console.error(error);
+      setMensaje("Error al cargar los puntos de reciclaje");
+    }
+  };
+
+  // Método para registrar
+  const registrarPunto = async (punto) => {
+    try {
+      const nuevoPunto = await guardarPunto(punto);
+
+      // Agregar el nuevo punto al listado sin recargar la página
+      setPuntos(prev => [...prev, nuevoPunto]);
+
+      setMensaje("Punto de reciclaje registrado correctamente");
+      return true;
+    } catch (error) {
+      console.error(error);
+      setMensaje("Error al registrar el punto de reciclaje");
+      return false;
+    }
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+    <div className="contenedor">
+
+      <header className="encabezado">
+        <h1>Puntos de Reciclaje</h1>
+        <p>Administración de estaciones de reciclaje</p>
+      </header>
+
+      <section className="seccion-formulario">
+
+        <h2>Registrar nuevo punto</h2>
+
+        <PuntoForm
+          onGuardar={registrarPunto}
+        />
+
       </section>
 
-      <div className="ticks"></div>
+      {mensaje && (
+        <div className="mensaje">
+          {mensaje}
+        </div>
+      )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      <section className="seccion-listado">
+
+        <h2>Puntos registrados</h2>
+
+        <p>Total de puntos: {puntos.length}</p>
+
+        <div className="grid-recursos">
+
+          {puntos.map((punto) => (
+
+            <PuntoCard
+              key={punto.id}
+              punto={punto}
+            />
+
+          ))}
+
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
+
+        {puntos.length === 0 && (
+          <p>No existen puntos de reciclaje registrados.</p>
+        )}
+
       </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
