@@ -1,0 +1,1 @@
+CREATE DATABASE reciclaje_db;
