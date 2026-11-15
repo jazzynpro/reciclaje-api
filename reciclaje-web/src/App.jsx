@@ -7,7 +7,7 @@ import PuntoCard from "./components/PuntoCard";
 import {
   listarPuntos,
   guardarPunto
-} from "./services/puntoService";
+} from "./services/PuntoService.js";
 
 import "./App.css";
 
@@ -78,11 +78,12 @@ function App() {
 
         <h2>Puntos registrados</h2>
 
-        <p>Total de puntos: {puntos.length}</p>
+        <p>Total de puntos: {Array.isArray(puntos) ? puntos.length : 0}</p>
 
         <div className="grid-recursos">
 
           {puntos.map((punto) => (
+
 
             <PuntoCard
               key={punto.id}
@@ -93,7 +94,7 @@ function App() {
 
         </div>
 
-        {puntos.length === 0 && (
+        {(!Array.isArray(puntos) || puntos.length === 0) && (
           <p>No existen puntos de reciclaje registrados.</p>
         )}
 

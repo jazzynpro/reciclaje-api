@@ -25,13 +25,13 @@ public class PuntoReciclajeController {
 	}
 
 	// Consultar todos los puntos de Reciclaje
-	@GetMapping("/listar")
+	@GetMapping
 	public List<PuntoReciclaje> listar() {
 		return service.listarPuntos();
 	}
 
 	// Recibe un JSON y regista un punto de reciclaje
-	@PostMapping("/registrar")
+	@PostMapping
 	public PuntoReciclaje guardar(@RequestBody PuntoReciclaje punto) {
 		return service.guardarPunto(punto);
 	}
